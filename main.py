@@ -20,9 +20,10 @@ class Loan:
 
         self.df = pd.DataFrame()
 
-    def calculate(self, price, down_percentage, term, rate,
-                  start_month, start_year,
-                  monthly_extra_payment=0, yearly_extra_payment=0, one_time_payments=None):
+    def calculate(
+        self, price, down_percentage, term, rate, start_month, start_year,
+        monthly_extra_payment=0, yearly_extra_payment=0, one_time_payments=None
+    ):
 
         self.price = price
         self.down = down_percentage / 100
