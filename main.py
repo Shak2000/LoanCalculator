@@ -141,7 +141,7 @@ class Loan:
 
             # Adjust if the total principal reduction was capped
             if total_principal_reduction > current_loan_balance:
-                # If total payments would have overpaid, the final payment is just remaining balance + interest
+                # If total payments overpaid, the final payment is just remaining balance + interest
                 actual_total_cash_out_this_month = interest_for_month + current_loan_balance
 
             current_loan_balance -= actual_principal_payment_this_month
@@ -307,7 +307,8 @@ def main():
 
                 print(f"\nYour estimated base monthly payment (Principal & Interest): ${monthly_payment:.2f}")
                 print(
-                    f"Total amount paid over the actual loan term (including all extra payments): ${total_amount_paid:.2f}")
+                    f"Total amount paid over the actual loan term (including all extra payments): "
+                    f"${total_amount_paid:.2f}")
 
                 if payoff_month is not None and payoff_year is not None:
                     # Format the payoff date nicely
