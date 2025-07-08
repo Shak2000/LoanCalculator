@@ -12,9 +12,9 @@ class Loan:
         self.tp = 0  # Total Payment
         self.df = pd.DataFrame()
 
-    def calculate(self, price, down, term, rate):
+    def calculate(self, price, down_percentage, term, rate):
         self.price = price
-        self.down = down / 100  # Convert percentage to decimal
+        self.down = down_percentage / 100  # Convert percentage to decimal
         self.principal = price * (1 - self.down)  # Principal is price minus down payment
         self.term = term
         self.rate = rate / 100  # Convert percentage to decimal
@@ -74,15 +74,38 @@ def run_calculator():
         if choice == '1':
             try:
                 price = float(input("Enter the total price of the item (e.g., 300000): "))
-                down = float(input("Enter the down payment percentage (e.g., 20 for 20%): "))
+
+                down_input_type = input(
+                    "Do you want to enter down payment as (P)ercentage or (A)mount? ").strip().upper()
+
+                down_payment_percentage = 0.0
+
+                if down_input_type == 'P':
+                    down_percentage = float(input("Enter the down payment percentage (e.g., 20 for 20%): "))
+                    if not (0 <= down_percentage <= 100):
+                        print("Down payment percentage must be between 0 and 100.")
+                        continue
+                    down_payment_percentage = down_percentage
+                elif down_input_type == 'A':
+                    down_amount = float(input("Enter the down payment amount (e.g., 60000): "))
+                    if not (0 <= down_amount <= price):
+                        print(f"Down payment amount must be between 0 and the price ({price}).")
+                        continue
+                    down_payment_percentage = (down_amount / price) * 100
+                else:
+                    print("Invalid down payment input type. Please enter 'P' or 'A'.")
+                    continue
+
                 term = int(input("Enter the loan term in years (e.g., 30): "))
                 rate = float(input("Enter the annual interest rate percentage (e.g., 5 for 5%): "))
 
                 loan = Loan()
-                monthly_payment, amortization_schedule = loan.calculate(price, down, term, rate)
+                # Pass the calculated percentage to the calculate method
+                monthly_payment, amortization_schedule = loan.calculate(price, down_payment_percentage, term, rate)
 
                 print(f"\nYour estimated monthly payment is: ${monthly_payment:.2f}")
                 print("\nAmortization Schedule:")
+
                 # Display the DataFrame, limiting rows for large terms
                 if term * 12 > 24:  # Show first 12 and last 12, or adjust as desired
                     print(amortization_schedule.head(13).to_string())
@@ -92,7 +115,9 @@ def run_calculator():
                     print(amortization_schedule.to_string())
 
             except ValueError:
-                print("Invalid input. Please enter numeric values for price, down payment, term, and rate.")
+                print("Invalid input. Please enter valid numeric values.")
+            except ZeroDivisionError:
+                print("Cannot calculate percentage for a price of zero. Please enter a valid price.")
             except Exception as e:
                 print(f"An error occurred: {e}")
         elif choice == '2':
